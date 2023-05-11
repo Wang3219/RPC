@@ -44,9 +44,9 @@ public class KryoSerializer implements Serializer {
     public <T> T deSerialize(byte[] body, Class<T> clazz) {
         try (Input input = new Input(new ByteArrayInputStream(body))) {
             Kryo kryo = kryoThreadLocal.get();
-            kryo.readObject(input, clazz);
+            T t = kryo.readObject(input, clazz);
             kryoThreadLocal.remove();
-            return clazz.cast(input);
+            return clazz.cast(t);
         } catch (Exception e) {
             log.error("deserialize unsuccessfully! ");
         }
