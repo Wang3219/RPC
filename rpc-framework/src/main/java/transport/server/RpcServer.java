@@ -12,7 +12,9 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import lombok.extern.slf4j.Slf4j;
+import registry.ServiceProvider;
 import registry.ServiceRegister;
+import registry.impl.ZKServiceProviderImpl;
 import registry.impl.ZKServiceRegisterImpl;
 import registry.util.CuratorUtils;
 import transport.codec.RpcMessageDecoder;
@@ -30,21 +32,15 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class RpcServer {
-    private static final int PORT = 9999;
-    private final ServiceRegister serviceRegister;
+    public static final int PORT = 9999;
+    private final ServiceProvider serviceProvider;
 
     public RpcServer() {
-        serviceRegister = SingletonFactory.getInstance(ZKServiceRegisterImpl.class);
+        this.serviceProvider = SingletonFactory.getInstance(ZKServiceProviderImpl.class);
     }
 
-    public void registerService(String rpcServiceName) {
-        String host;
-        try {
-            host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            throw new IllegalStateException("The host is unknown!");
-        }
-        serviceRegister.registerService(rpcServiceName, new InetSocketAddress(host, PORT));
+    public void registerService(String rpcServiceName, Object service) {
+        serviceProvider.publishService(rpcServiceName, service);
     }
 
     public void start() {

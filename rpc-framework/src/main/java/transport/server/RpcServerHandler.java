@@ -1,15 +1,20 @@
 package transport.server;
 
 import constants.RpcConstants;
+import factory.SingletonFactory;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import registry.ServiceProvider;
+import registry.impl.ZKServiceProviderImpl;
 import transport.dto.RpcMessage;
 import transport.dto.RpcRequest;
 import transport.dto.RpcResponse;
+
+import java.lang.reflect.Method;
 
 /**
  * @author: weiyi.wang1999@qq.com
@@ -18,6 +23,13 @@ import transport.dto.RpcResponse;
  */
 @Slf4j
 public class RpcServerHandler extends ChannelInboundHandlerAdapter {
+    private final ServiceProvider serviceProvider;
+
+    public RpcServerHandler() {
+        this.serviceProvider = SingletonFactory.getInstance(ZKServiceProviderImpl.class);
+    }
+
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof RpcMessage) {
@@ -33,8 +45,11 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
                 rpcMessage.setData(RpcConstants.PONG);
             } else {
                 RpcRequest request = (RpcRequest) ((RpcMessage) msg).getData();
-                // TODO 反射执行目标方法
-                Object result = null;
+                // 获取service
+                Object service = serviceProvider.getService(request.getRpcServiceName());
+                // 反射执行目标方法
+                Method method = service.getClass().getMethod(request.getMethodName(), request.getParamTypes());
+                Object result = method.invoke(service, request.getParameters());
                 log.info("server get a result:{}", result.toString());
 
                 rpcMessage.setMessageType(RpcConstants.RESPONSE_TYPE);
