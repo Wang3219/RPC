@@ -5,14 +5,14 @@ import lombok.Getter;
 
 /**
  * @author: weiyi.wang1999@qq.com
- * @create: 2023-05-10 16:06
+ * @create: 2023-05-12 20:06
  * @Description:
  */
 @Getter
 @AllArgsConstructor
-public enum SerializerTypeConstant {
+public enum CompressTypeConstant {
 
-    KRYO((byte) 1, "kryo");
+    GZIP((byte) 1, "gzip");
 
     private final byte code;
     private final String name;

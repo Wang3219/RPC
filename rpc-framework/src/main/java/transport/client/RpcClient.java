@@ -1,5 +1,6 @@
 package transport.client;
 
+import constants.CompressTypeConstant;
 import constants.RpcConstants;
 import constants.SerializerTypeConstant;
 import factory.SingletonFactory;
@@ -76,11 +77,11 @@ public class RpcClient {
 
         if (channel.isActive()) {
             unprocessedRequests.put(request.getRequestId(), resultFuture);
-            // TODO 压缩方式
+
             RpcMessage rpcMessage = RpcMessage.builder()
                     .messageType(RpcConstants.REQUEST_TYPE)
                     .codec(SerializerTypeConstant.KRYO.getCode())
-                    .compress((byte) -1)
+                    .compress(CompressTypeConstant.GZIP.getCode())
                     .data(request)
                     .build();
             channel.writeAndFlush(rpcMessage).addListener((ChannelFutureListener) future -> {

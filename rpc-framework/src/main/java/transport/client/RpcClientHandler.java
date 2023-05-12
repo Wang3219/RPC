@@ -1,5 +1,6 @@
 package transport.client;
 
+import constants.CompressTypeConstant;
 import constants.RpcConstants;
 import constants.SerializerTypeConstant;
 import factory.SingletonFactory;
@@ -39,11 +40,11 @@ public class RpcClientHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
             if (state == IdleState.WRITER_IDLE) {
-                // TODO 压缩方式
+
                 RpcMessage rpcMessage = RpcMessage.builder()
                         .messageType(RpcConstants.HEARTBEAT_REQUEST_TYPE)
                         .codec(SerializerTypeConstant.KRYO.getCode())
-                        .compress((byte) -1)
+                        .compress(CompressTypeConstant.GZIP.getCode())
                         .data(RpcConstants.PING)
                         .build();
                 ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);

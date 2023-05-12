@@ -1,5 +1,7 @@
 package transport.codec;
 
+import compress.Compress;
+import compress.impl.GZIPCompress;
 import constants.RpcConstants;
 import factory.SingletonFactory;
 import io.netty.buffer.ByteBuf;
@@ -19,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
     private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger(0);
     private final Serializer serializer = SingletonFactory.getInstance(KryoSerializer.class);
+    private final Compress compress = SingletonFactory.getInstance(GZIPCompress.class);
 
     /**
      *  4B  magic code（魔数）   1B version（版本）   4B full length（消息长度）    1B messageType（消息类型）
@@ -36,8 +39,8 @@ public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
         if (messageType != RpcConstants.HEARTBEAT_REQUEST_TYPE && messageType != RpcConstants.HEARTBEAT_RESPONSE_TYPE) {
             // 序列化
             body = serializer.serialize(rpcMessage.getData());
-            // TODO 压缩
-
+            // 压缩
+            body = compress.compress(body);
             fullLength += body.length;
         }
         // 编码
