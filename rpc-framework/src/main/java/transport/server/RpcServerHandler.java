@@ -1,6 +1,7 @@
 package transport.server;
 
 import constants.RpcConstants;
+import constants.SerializerTypeConstant;
 import factory.SingletonFactory;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,8 +37,8 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
             log.info("server received a message:{}", msg);
             byte messageType = ((RpcMessage) msg).getMessageType();
             RpcMessage rpcMessage = new RpcMessage();
-            // TODO 编码、压缩方式
-            rpcMessage.setCodec((byte) -1);
+            // TODO 压缩方式
+            rpcMessage.setCodec(SerializerTypeConstant.KRYO.getCode());
             rpcMessage.setCompress((byte) -1);
 
             if (messageType == RpcConstants.HEARTBEAT_REQUEST_TYPE) {

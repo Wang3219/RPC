@@ -1,6 +1,7 @@
 package transport.client;
 
 import constants.RpcConstants;
+import constants.SerializerTypeConstant;
 import factory.SingletonFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -75,10 +76,10 @@ public class RpcClient {
 
         if (channel.isActive()) {
             unprocessedRequests.put(request.getRequestId(), resultFuture);
-            // TODO 编码和压缩方式
+            // TODO 压缩方式
             RpcMessage rpcMessage = RpcMessage.builder()
                     .messageType(RpcConstants.REQUEST_TYPE)
-                    .codec((byte) -1)
+                    .codec(SerializerTypeConstant.KRYO.getCode())
                     .compress((byte) -1)
                     .data(request)
                     .build();

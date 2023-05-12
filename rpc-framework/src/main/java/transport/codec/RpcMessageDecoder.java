@@ -1,11 +1,16 @@
 package transport.codec;
 
 import constants.RpcConstants;
+import factory.SingletonFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
+import serialize.Serializer;
+import serialize.impl.KryoSerializer;
 import transport.dto.RpcMessage;
+import transport.dto.RpcRequest;
+import transport.dto.RpcResponse;
 
 /**
  * @author: weiyi.wang1999@qq.com
@@ -14,8 +19,10 @@ import transport.dto.RpcMessage;
  */
 @Slf4j
 public class RpcMessageDecoder extends LengthFieldBasedFrameDecoder {
+    private final Serializer serializer;
     public RpcMessageDecoder() {
         super(RpcConstants.MAX_FRAME_LENGTH, 5, 4, -9, 0);
+        this.serializer = SingletonFactory.getInstance(KryoSerializer.class);
     }
 
     @Override
@@ -60,7 +67,14 @@ public class RpcMessageDecoder extends LengthFieldBasedFrameDecoder {
                     buf.readBytes(body);
                     // TODO 解压缩
 
-                    // TODO 反序列化
+                    // 反序列化
+                    if (messageType == RpcConstants.REQUEST_TYPE) {
+                        RpcRequest request = serializer.deSerialize(body, RpcRequest.class);
+                        rpcMessage.setData(request);
+                    } else if (messageType == RpcConstants.RESPONSE_TYPE) {
+                        RpcResponse rpcResponse = serializer.deSerialize(body, RpcResponse.class);
+                        rpcMessage.setData(rpcResponse);
+                    }
                 }
                 return rpcMessage;
             }

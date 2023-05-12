@@ -1,9 +1,12 @@
 package transport.codec;
 
 import constants.RpcConstants;
+import factory.SingletonFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import serialize.Serializer;
+import serialize.impl.KryoSerializer;
 import transport.dto.RpcMessage;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
     private static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger(0);
+    private final Serializer serializer = SingletonFactory.getInstance(KryoSerializer.class);
 
     /**
      *  4B  magic code（魔数）   1B version（版本）   4B full length（消息长度）    1B messageType（消息类型）
@@ -30,8 +34,8 @@ public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
         int fullLength = RpcConstants.HEAD_LENGTH;
         byte messageType = rpcMessage.getMessageType();
         if (messageType != RpcConstants.HEARTBEAT_REQUEST_TYPE && messageType != RpcConstants.HEARTBEAT_RESPONSE_TYPE) {
-            // TODO 序列化
-
+            // 序列化
+            body = serializer.serialize(rpcMessage.getData());
             // TODO 压缩
 
             fullLength += body.length;
