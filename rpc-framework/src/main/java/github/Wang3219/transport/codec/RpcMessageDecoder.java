@@ -40,8 +40,12 @@ public class RpcMessageDecoder extends LengthFieldBasedFrameDecoder {
                 byte[] magicNumber = RpcConstants.MAGIC_NUMBER;
                 byte[] mn = new byte[magicNumber.length];
                 buf.readBytes(mn);
-                if (!magicNumber.toString().equals(mn.toString()))
-                    log.error("Decode unsuccessfully! Magic number is wrong! ");
+                for (int i=0; i < mn.length; i++) {
+                    if (magicNumber[i] != mn[i]) {
+                        log.error("Decode unsuccessfully! Magic number is wrong! ");
+                        break;
+                    }
+                }
                 // 检查版本号
                 byte version = buf.readByte();
                 if (version != RpcConstants.VERSION)

@@ -13,6 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import github.Wang3219.registry.ServiceDiscovery;
 import github.Wang3219.registry.impl.ZKServiceDiscoveryImpl;
@@ -58,6 +59,7 @@ public class RpcClient {
         unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }
 
+    @SneakyThrows
     public Object sendRequest(RpcRequest request) {
         // 返回值
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();

@@ -2,6 +2,7 @@ package github.Wang3219.registry.impl;
 
 import github.Wang3219.factory.SingletonFactory;
 import github.Wang3219.loalBalance.LoadBalance;
+import github.Wang3219.loalBalance.impl.RandomLoadBalance;
 import github.Wang3219.registry.ServiceDiscovery;
 import github.Wang3219.registry.util.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +18,10 @@ import java.util.List;
  */
 @Slf4j
 public class ZKServiceDiscoveryImpl implements ServiceDiscovery {
-    LoadBalance loadBalance;
-
-    public ZKServiceDiscoveryImpl() {
-        this.loadBalance = SingletonFactory.getInstance(LoadBalance.class);
-    }
 
     @Override
     public InetSocketAddress lookupService(RpcRequest request) {
+        LoadBalance loadBalance = SingletonFactory.getInstance(RandomLoadBalance.class);
         String rpcServiceName = request.getRpcServiceName();
         CuratorFramework zkClient = CuratorUtils.getZkClient();
         List<String> childrenNodes = CuratorUtils.getChildrenNodes(zkClient, rpcServiceName);
