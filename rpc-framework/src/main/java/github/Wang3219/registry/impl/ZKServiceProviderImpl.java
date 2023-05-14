@@ -1,5 +1,6 @@
 package github.Wang3219.registry.impl;
 
+import github.Wang3219.config.ServiceConfig;
 import github.Wang3219.factory.SingletonFactory;
 import github.Wang3219.registry.ServiceProvider;
 import github.Wang3219.registry.ServiceRegister;
@@ -28,15 +29,16 @@ public class ZKServiceProviderImpl implements ServiceProvider {
     }
 
     @Override
-    public void publishService(String rpcServiceName, Object service) {
+    public void publishService(ServiceConfig serviceConfig) {
         String host;
         try {
             host = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             throw new IllegalStateException("The host is unknown!");
         }
+        String rpcServiceName = serviceConfig.getServiceName();
         if (!serviceMap.containsKey(rpcServiceName))
-            serviceMap.put(rpcServiceName, service);
+            serviceMap.put(rpcServiceName, serviceConfig.getService());
         serviceRegister.registerService(rpcServiceName, new InetSocketAddress(host, RpcServer.PORT));
     }
 

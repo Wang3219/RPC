@@ -1,5 +1,6 @@
 package github.Wang3219;
 
+import github.Wang3219.config.ServiceConfig;
 import github.Wang3219.transport.server.RpcServer;
 
 /**
@@ -11,7 +12,12 @@ public class ServiceMain {
     public static void main(String[] args) {
         ServiceTest serviceTest = new ServiceTest();
         RpcServer rpcServer = new RpcServer();
-        rpcServer.registerService("ServiceTest", serviceTest);
+        ServiceConfig serviceConfig = ServiceConfig.builder()
+                .group("group1")
+                .version("version1")
+                .service(serviceTest)
+                .build();
+        rpcServer.registerService(serviceConfig);
         rpcServer.start();
     }
 }

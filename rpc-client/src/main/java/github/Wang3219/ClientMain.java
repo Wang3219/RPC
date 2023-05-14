@@ -1,11 +1,8 @@
 package github.Wang3219;
 
-import github.Wang3219.constants.RpcConstants;
+import github.Wang3219.config.ServiceConfig;
+import github.Wang3219.proxy.RpcProxy;
 import github.Wang3219.transport.client.RpcClient;
-import github.Wang3219.transport.dto.RpcMessage;
-import github.Wang3219.transport.dto.RpcRequest;
-
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -14,21 +11,17 @@ import java.util.concurrent.ExecutionException;
  * @Description:
  */
 public class ClientMain {
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        RpcClient rpcClient = new RpcClient();
+    public static void main(String[] args) {
+        ServiceConfig config = ServiceConfig.builder()
+                .version("version1")
+                .group("group1")
+                .build();
 
+        RpcProxy rpcProxy = new RpcProxy(config);
+        TestApi proxy = rpcProxy.getProxy(TestApi.class);
         for (int i=0; i < 50; i++) {
-            RpcRequest request = RpcRequest.builder()
-                    .requestId("1")
-                    .interfaceName("ServiceTest")
-                    .methodName("add")
-                    .paramTypes(new Class[]{Integer.class, Integer.class})
-                    .parameters(new Object[]{i, 5})
-                    .group("")
-                    .version("")
-                    .build();
-            CompletableFuture future = (CompletableFuture) rpcClient.sendRequest(request);
-            System.out.println(future.get());
+            String result = proxy.add(i, 5);
+            System.out.println(result);
         }
     }
 }

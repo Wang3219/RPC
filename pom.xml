@@ -33,6 +33,7 @@
         <module>rpc-framework</module>
         <module>rpc-server</module>
         <module>rpc-client</module>
+        <module>rpc-service-api</module>
     </modules>
     <dependencies>
         <!-- lombok -->

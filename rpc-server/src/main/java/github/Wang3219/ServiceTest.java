@@ -5,7 +5,8 @@ package github.Wang3219;
  * @create: 2023-05-13 19:10
  * @Description:
  */
-public class ServiceTest {
+public class ServiceTest implements TestApi {
+    @Override
     public String add(Integer x, Integer y) {
         return "哈哈哈哈哈哈哈哈哈" + (x+y);
     }

@@ -1,5 +1,6 @@
 package github.Wang3219.transport.server;
 
+import github.Wang3219.config.ServiceConfig;
 import github.Wang3219.factory.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -37,8 +38,8 @@ public class RpcServer {
         this.serviceProvider = SingletonFactory.getInstance(ZKServiceProviderImpl.class);
     }
 
-    public void registerService(String rpcServiceName, Object service) {
-        serviceProvider.publishService(rpcServiceName, service);
+    public void registerService(ServiceConfig serviceConfig) {
+        serviceProvider.publishService(serviceConfig);
     }
 
     public void start() {
