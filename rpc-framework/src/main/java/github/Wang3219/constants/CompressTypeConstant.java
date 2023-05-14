@@ -18,7 +18,7 @@ public enum CompressTypeConstant {
     private final String name;
 
     public static String getName(byte code) {
-        for (SerializerTypeConstant value : SerializerTypeConstant.values()) {
+        for (CompressTypeConstant value : CompressTypeConstant.values()) {
             if (value.getCode() == code)
                 return value.getName();
         }
