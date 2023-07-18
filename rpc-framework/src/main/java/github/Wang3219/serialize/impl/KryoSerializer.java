@@ -46,7 +46,7 @@ public class KryoSerializer implements Serializer {
             Kryo kryo = kryoThreadLocal.get();
             T t = kryo.readObject(input, clazz);
             kryoThreadLocal.remove();
-            return clazz.cast(t);
+            return t;
         } catch (Exception e) {
             log.error("deserialize unsuccessfully! ");
         }
